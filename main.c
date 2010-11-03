@@ -319,6 +319,9 @@ void PINRST_BTL() //Esta rutina resetea el dispositivo
 }
 
 void main() {
+	// mod, added to patch config bits
+	patch_config();
+
 	output_high(LEDR);
 	output_low(LEDG);
    
@@ -336,12 +339,12 @@ void main() {
 	  if(!input(PIN_B7)) {
 					delay_ms(25);	//debounce
 					if(!input(PIN_B7)) {	//its a press
-						output_bit(LEDB,1);					
+						output_bit(LEDG,1);					
 						delay_ms(500);	//for long press detection, 
 						if(!input(PIN_B7)) {	//its still a press after 1 sec
 							PINRST_BTL();			//reset device
 						}						
-						output_bit(LEDB,0);			
+						output_bit(LEDG,0);			
 					}					
 		}
 		
