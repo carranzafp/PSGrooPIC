@@ -6,7 +6,7 @@ PIC18F microcontrollers.
 
 It is known to work on:
 
-- PIC18F2550
+- PIC18F4550
 
 **This software is not intended to enable piracy, and such features
 have been disabled.  This software is intended to allow the execution
