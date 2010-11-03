@@ -1,21 +1,21 @@
-//////// Standard Header file for the PIC18F2550 device ////////////////
-#device PIC18F2550
+//////// Standard Header file for the PIC18F4550 device ////////////////
+#device PIC18F4550
 #nolist
 //////// Program memory: 16384x16  Data RAM: 2048  Stack: 31
-//////// I/O: 23   Analog Pins: 13
+//////// I/O: 35   Analog Pins: 13
 //////// Data EEPROM: 256
 //////// C Scratch area: 00   ID Location: 200000
 //////// Fuses: XT,PROTECT,NOPROTECT,BROWNOUT_NOSL,NOBROWNOUT,WDT1,NOWDT
 //////// Fuses: BORV45,PUT,NOPUT,CPD,NOSTVREN,STVREN,NODEBUG,DEBUG,NOLVP,WRT
 //////// Fuses: NOWRT,WRTD,NOIESO,NOFCMEN,NOPBADEN,CCP2B3,WRTC,WRTB,EBTR
 //////// Fuses: NOEBTR,EBTRB,CPB,NOMCLR,NOLPT1OSC,NOXINST,PLL1,PLL2,PLL3
-//////// Fuses: PLL4,PLL5,PLL6,PLL10,PLL12,CPUDIV1,NOUSBDIV,NOVREGEN,BORV20
-//////// Fuses: CCP2C1,CPUDIV3,USBDIV,HS,INTXT,INTRC_IO,ECPLL,EC,FCMEN
-//////// Fuses: BROWNOUT,BORV27,VREGEN,WDT32768,WDT8192,WDT2048,WDT512
-//////// Fuses: WDT128,WDT32,WDT8,WDT2,LPT1OSC,LVP,NOCPB,NOWRTC,NOWRTD
-//////// Fuses: CPUDIV2,INTHS,XTPLL,BROWNOUT_SW,WDT,WDT4096,WDT256,WDT16
-//////// Fuses: PBADEN,XINST,NOWRTB,HSPLL,IESO,WDT16384,WDT64,MCLR,NOEBTRB
-//////// Fuses: INTRC,WDT1024,NOCPD,BORV42,WDT4,CPUDIV4
+//////// Fuses: PLL4,PLL5,PLL6,PLL10,PLL12,CPUDIV1,NOUSBDIV,NOVREGEN,ICSP1
+//////// Fuses: BORV20,CCP2C1,CPUDIV3,USBDIV,HS,INTXT,INTRC_IO,ECPLL,EC
+//////// Fuses: FCMEN,BROWNOUT,BORV27,VREGEN,WDT32768,WDT8192,WDT2048,WDT512
+//////// Fuses: WDT128,WDT32,WDT8,WDT2,LPT1OSC,LVP,XINST,NOCPD,NOWRTB
+//////// Fuses: NOEBTRB,CPUDIV2,INTHS,XTPLL,BROWNOUT_SW,WDT,WDT4096,WDT256
+//////// Fuses: WDT16,PBADEN,ICPRT,NOWRTC,HSPLL,IESO,WDT16384,WDT64,MCLR
+//////// Fuses: NOWRTD,INTRC,WDT1024,NOCPB,BORV42,WDT4,CPUDIV4
 //////// 
 ////////////////////////////////////////////////////////////////// I/O
 // Discrete I/O Functions: SET_TRIS_x(), OUTPUT_x(), INPUT_x(),
@@ -49,7 +49,20 @@
 #define PIN_C6  31766
 #define PIN_C7  31767
 
+#define PIN_D0  31768
+#define PIN_D1  31769
+#define PIN_D2  31770
+#define PIN_D3  31771
+#define PIN_D4  31772
+#define PIN_D5  31773
+#define PIN_D6  31774
+#define PIN_D7  31775
+
+#define PIN_E0  31776
+#define PIN_E1  31777
+#define PIN_E2  31778
 #define PIN_E3  31779
+#define PIN_E7  31783
 
 ////////////////////////////////////////////////////////////////// Useful defines
 #define FALSE 0
@@ -198,9 +211,47 @@
 #word   CCP_1    =                      getenv("SFR:CCPR1L")
 #byte   CCP_1_LOW=                      getenv("SFR:CCPR1L")
 #byte   CCP_1_HIGH=                     getenv("SFR:CCPR1H")
+// The following should be used with the ECCP unit only (or these in)
+#define CCP_PWM_H_H                     0x0c
+#define CCP_PWM_H_L                     0x0d
+#define CCP_PWM_L_H                     0x0e
+#define CCP_PWM_L_L                     0x0f
+
+#define CCP_PWM_FULL_BRIDGE             0x40
+#define CCP_PWM_FULL_BRIDGE_REV         0xC0
+#define CCP_PWM_HALF_BRIDGE             0x80
+
+#define CCP_SHUTDOWN_ON_COMP1           0x100000
+#define CCP_SHUTDOWN_ON_COMP2           0x200000
+#define CCP_SHUTDOWN_ON_COMP            0x300000
+#define CCP_SHUTDOWN_ON_INT0            0x400000
+#define CCP_SHUTDOWN_ON_COMP1_INT0      0x500000
+#define CCP_SHUTDOWN_ON_COMP2_INT0      0x600000
+#define CCP_SHUTDOWN_ON_COMP_INT0       0x700000
+
+#define CCP_SHUTDOWN_AC_L               0x000000
+#define CCP_SHUTDOWN_AC_H               0x040000
+#define CCP_SHUTDOWN_AC_F               0x080000
+
+#define CCP_SHUTDOWN_BD_L               0x000000
+#define CCP_SHUTDOWN_BD_H               0x010000
+#define CCP_SHUTDOWN_BD_F               0x020000
+
+#define CCP_SHUTDOWN_RESTART            0x80000000
+
 #word   CCP_2    =                      getenv("SFR:CCPR2L")
 #byte   CCP_2_LOW=                      getenv("SFR:CCPR2L")
 #byte   CCP_2_HIGH=                     getenv("SFR:CCPR2H")
+////////////////////////////////////////////////////////////////// PSP
+// PSP Functions: SETUP_PSP, PSP_INPUT_FULL(), PSP_OUTPUT_FULL(),
+//                PSP_OVERFLOW(), INPUT_D(), OUTPUT_D()
+// PSP Variables: PSP_DATA
+// Constants used in SETUP_PSP() are:
+#define PSP_ENABLED                     0x10
+#define PSP_DISABLED                    0
+
+#byte  PSP_DATA=    0xF83               
+
 ////////////////////////////////////////////////////////////////// SPI
 // SPI Functions: SETUP_SPI, SPI_WRITE, SPI_READ, SPI_DATA_IN
 // Constants used in SETUP_SPI() are:
@@ -408,6 +459,7 @@
 #define INT_COMP                  0x00A040
 #define INT_EEPROM                0x00A010
 #define INT_OSCF                  0x00A080
+#define INT_SPP                   0x009D80
 #define INT_USB                   0x00A020
 
 #list
