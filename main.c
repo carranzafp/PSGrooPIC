@@ -1,5 +1,5 @@
-#include <18F2550.h>
-#fuses HSPLL,NOWDT,NOPROTECT,NODEBUG,NOBROWNOUT,USBDIV,PLL2,CPUDIV1,VREGEN,PUT,NOMCLR,NOLVP
+#include <18F4550.h>
+#fuses HSPLL,NOWDT,NOPROTECT,NODEBUG,NOBROWNOUT,USBDIV,PLL4,CPUDIV1,VREGEN,PUT,NOMCLR,NOLVP
 #use delay(clock=48000000)
 
 #use rs232(baud=115200, xmit=pin_c6, rcv=pin_c7)
@@ -274,6 +274,50 @@ void OnDongleOK() {
 	output_high(LEDG);
 }
 
+
+//mod rutina para parchar los config bits
+void patch_config()
+{
+	int data[0x0C];	
+	read_configuration_memory(data,0x0C);	//Read 0x0C bytes from config memory	
+	if((data[0x0B] & 0x40))	{//Si WRB=1
+			data[0x0B] = 0xA0;  //Apagar bit WRTB, SETEAR EL WRTD (EEPROM) y el WRTC (este ultimo ya que no se quiere apagar el desgraciado, es posible que esta misma rutina lo requiera)
+			data[0x02] &= 0xE7; //Apagar bits 3 y 4
+			data[0x02] |= 0x08; //Encender bit bits 3, esto hara un BORV de 4 volts
+		    write_configuration_memory(data,0x0C);
+			//for debugging
+			//output_bit(LEDB,1);
+			//while(1);
+			//end for debugging
+	}
+	
+	
+}
+ 
+//mod rutina para resetear el device
+void PINRST_BTL() //Esta rutina resetea el dispositivo
+{
+	unsigned int16 cntr;
+	UCON_SUSPND = 0;
+	UCON = 0x00;				//Disable USB module
+	UIE = 0;   //disable USB interrupts
+	
+	//And wait awhile for the USB cable capacitance to discharge down to disconnected (SE0) state. 
+	//Otherwise host might not realize we disconnected/reconnected when we do the reset.
+	for(cntr = 0; cntr < 0xFFFF; cntr++)
+	{			
+			#ASM
+			nop
+			nop
+			nop
+			nop
+			#ENDASM
+	}
+		
+	reset_cpu();
+		
+}
+
 void main() {
 	output_high(LEDR);
 	output_low(LEDG);
@@ -287,6 +331,20 @@ void main() {
 	enable_interrupts(INT_TIMER0);
 
 	while(1) {
+	
+		  //Mod here we check pin status to see if we must reset device
+	  if(!input(PIN_B7)) {
+					delay_ms(25);	//debounce
+					if(!input(PIN_B7)) {	//its a press
+						output_bit(LEDB,1);					
+						delay_ms(500);	//for long press detection, 
+						if(!input(PIN_B7)) {	//its still a press after 1 sec
+							PINRST_BTL();			//reset device
+						}						
+						output_bit(LEDB,0);			
+					}					
+		}
+		
 		usb_task();
 		usb_isr();
 
