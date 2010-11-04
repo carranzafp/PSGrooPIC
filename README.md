@@ -1,5 +1,8 @@
-PSGroove
+PSGroove for Maximus AVRUSB and PIC18FUSB boards
 ========
+
+**** THIS IS BASED ON NOLTARI git work and I just adjusted to the boards that I use. ***
+NOLTARI GIT can be found on github.com/Noltari/PSGrooPIC.git
 
 This is the PSGrooPIC, an open-source reimplementation of the psjailbreak exploit for
 PIC18F microcontrollers.
@@ -19,7 +22,7 @@ Cloning
 -------
 The repository uses the PL3 Payload as a submodule.  To clone, use something like:
 
-    git clone git://github.com/Noltari/PSGrooPIC.git
+    git clone git://github.com/carranzafp/PSGrooPIC.git
     cd PSGrooPIC
     git submodule init
     git submodule update
