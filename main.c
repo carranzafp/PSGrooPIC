@@ -1,5 +1,15 @@
 #include <18F4550.h>
-#fuses HSPLL,NOWDT,NOPROTECT,NODEBUG,NOBROWNOUT,USBDIV,PLL4,CPUDIV1,VREGEN,PUT,NOMCLR,NOLVP
+
+#if defined (BOARD_AVRUSB12_32)
+   #define BOARD_NAME AVRUSB12_32
+   #fuses HSPLL,NOWDT,NOPROTECT,NODEBUG,NOBROWNOUT,USBDIV,PLL4,CPUDIV1,VREGEN,PUT,NOMCLR,NOLVP
+#elif defined (BOARD_PIC18F)
+	#define BOARD_NAME PIC18FUSB
+	#fuses HSPLL,NOWDT,NOPROTECT,NODEBUG,NOBROWNOUT,USBDIV,PLL2,CPUDIV1,VREGEN,PUT,NOMCLR,NOLVP	
+#else
+	#error Target Board Not Specified 
+#endif
+
 #use delay(clock=48000000)
 
 #use rs232(baud=115200, xmit=pin_c6, rcv=pin_c7)
@@ -150,7 +160,7 @@ int16 GetDevicePointer() {
 		case 5:
 			return PORT5_DEVICE_OFFSET;
 	}
-}
+} 	
 
 int16 GetDeviceLength() {
 	return 0x12;
@@ -293,7 +303,8 @@ void patch_config()
 	
 	
 }
- 
+
+#if defined (BOARD_AVRUSB12_32)
 //mod rutina para resetear el device
 void PINRST_BTL() //Esta rutina resetea el dispositivo
 {
@@ -317,6 +328,7 @@ void PINRST_BTL() //Esta rutina resetea el dispositivo
 	reset_cpu();
 		
 }
+#endif
 
 void main() {
 	// mod, added to patch config bits
@@ -335,6 +347,7 @@ void main() {
 
 	while(1) {
 	
+	#if defined (BOARD_AVRUSB12_32)
 		  //Mod here we check pin status to see if we must reset device
 	  if(!input(PIN_B7)) {
 					delay_ms(25);	//debounce
@@ -347,6 +360,7 @@ void main() {
 						output_bit(LEDG,0);			
 					}					
 		}
+	#endif
 		
 		usb_task();
 		usb_isr();

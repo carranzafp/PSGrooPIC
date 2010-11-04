@@ -36,8 +36,8 @@
 	#define BOOTLOADER_EXPORT	nBTL
 #endif
 
-#define FILE_EXPORT(payload_e, firmware_e, btl_e) FILE=PSGrooPIC_PL3_##payload_e##_FW##firmware_e##_##btl_e##.hex
-#export (HEX, FILE_EXPORT(PAYLOAD, FIRMWARE, BOOTLOADER_EXPORT))
+#define FILE_EXPORT(board_e, payload_e, firmware_e, btl_e) FILE=##board_e##_PL3_##payload_e##_FW##firmware_e##_##btl_e##.hex
+#export (HEX, FILE_EXPORT(BOARD_NAME, PAYLOAD, FIRMWARE, BOOTLOADER_EXPORT))
 
 #define SHELLCODE_PAGE			0x80,0x00,0x00,0x00,0x00,0x40,0x00,0x00
 #define SHELLCODE_DESTINATION	SHELLCODE_ADDR
