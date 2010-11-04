@@ -2,7 +2,10 @@ CCS_COMPILER			= ccsc
 CCS_SOURCE				= main.c
 CCS_FLAGS_NBL			= +FH +Y9 -L -A -E -M -P -J -D
 CCS_FLAGS_WBL			= $(CCS_FLAGS_NBL) +GWBOOTLOADER="true"
-CCS_FLAGS_LEDS			= +GLEDR="PIN_C1" +GLEDG="PIN_C2"
+CCS_FLAGS_LEDS_AVRUSB12_32	= +GLEDR="PIN_C1" +GLEDG="PIN_C2"
+CCS_FLAGS_LEDS_PIC18FUSB	= +GLEDR="PIN_B4" +GLEDG="PIN_B5"
+CCS_FLAGS_BOARD_AVRUSB12_32	= +GBOARD_AVRUSB12_32="true"
+CCS_FLAGS_BOARD_PIC18FUSB	= +GBOARD_PIC18F="true"
 ZIP						= zip -r
 BUILD_DIR				= build
 PAYLOAD_DIR				= PL3
@@ -35,9 +38,13 @@ all:
 		#Make custom Payloads.
 		$(foreach fw_pic, $(FIRMWARES_PIC2), $(foreach pl_pic, $(PAYLOADS_PIC), ($(B2HTARGET_PIC) $(PAYLOAD_DIR)/$(pl_pic)_$(fw_pic).bin $(PAYLOAD_DIR)/$(pl_pic)_pic_$(fw_pic).h $(pl_pic)_$(fw_pic)); ))
 
-		#HEX with bootloader.
-		$(foreach fw_pic, $(FIRMWARES_PIC2), $(foreach pl_pic, $(PAYLOADS_PIC), ($(CCS_COMPILER) $(CCS_FLAGS_WBL) $(CCS_FLAGS_LEDS) +GFW$(fw_pic)="true" +GPAYLOAD="$(pl_pic)" $(CCS_SOURCE)); ))
+		#HEX AVRUSB 1.2 32K with bootloader.
+		$(foreach fw_pic, $(FIRMWARES_PIC2), $(foreach pl_pic, $(PAYLOADS_PIC), ($(CCS_COMPILER) $(CCS_FLAGS_WBL) $(CCS_FLAGS_LEDS_AVRUSB12_32) $(CCS_FLAGS_BOARD_AVRUSB12_32) +GFW$(fw_pic)="true" +GPAYLOAD="$(pl_pic)" $(CCS_SOURCE)); ))
 
+		#HEX PIC18FUSB 32K with bootloader.
+		$(foreach fw_pic, $(FIRMWARES_PIC2), $(foreach pl_pic, $(PAYLOADS_PIC), ($(CCS_COMPILER) $(CCS_FLAGS_WBL) $(CCS_FLAGS_LEDS_PIC18FUSB) $(CCS_FLAGS_BOARD_PIC18FUSB) +GFW$(fw_pic)="true" +GPAYLOAD="$(pl_pic)" $(CCS_SOURCE)); ))
+		
+		
 		#HEX without bootloader.
 		#$(foreach fw_pic, $(FIRMWARES_PIC2), $(foreach pl_pic, $(PAYLOADS_PIC), ($(CCS_COMPILER) $(CCS_FLAGS_NBL) $(CCS_FLAGS_LEDS) +GFW$(fw_pic)="true" +GPAYLOAD="$(pl_pic)" $(CCS_SOURCE)); ))
 
